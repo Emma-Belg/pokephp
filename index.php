@@ -1,12 +1,41 @@
-
 <?php
-$homepage = file_get_contents('https://pokeapi.co/api/v2/pokemon/1');
-echo $homepage;
+declare(strict_types=1);
+
+ini_set("display_errors", "1");
+ini_set("display_startup_errors", "1");
+error_reporting(E_ALL);
+
+if(empty($_GET['pokemonToGet'])) {
+    $homepage = file_get_contents("https://pokeapi.co/api/v2/pokemon/1");
+}
+ else {
+     $homepage = file_get_contents("https://pokeapi.co/api/v2/pokemon/".$_GET["pokemonToGet"]);
+ }
+//echo $homepage;
 
 /*//this is to display the json as an object
 var_dump(json_decode($homepage));*/
 
-var_dump(json_decode($homepage, true));
+//this is to display the json as an array
+$arr =json_decode($homepage, true);
+//echo $arr;
+//print_r($arr);
+//echo $arr["moves"];
+$movesArr = array();
+$moves = $arr["moves"];
+
+for ($i = 0; $i < count($arr["moves"]); $i++){
+    array_push($movesArr, $arr["moves"][$i]["name"]);
+}
+
+$randMoves = array_rand($movesArr, 4);
+echo implode(",", $randMoves)
+//echo $arr[$randMoves[0]]."<br>";
+
+/*
+$arr2 = ['umber' => ['three' => 3,4], "two" => 2,3,4];
+$arr2['umber']['three'];
+$arr['abilities']['moves'];*/
 ?>
 
 <!DOCTYPE html>
@@ -21,7 +50,9 @@ var_dump(json_decode($homepage, true));
 </head>
 <body>
 <div id="searchBar">
-    <input type="text" id="pokemonToGet"/>
+    <form method="get" action="" name="pokemonToGet">
+        <input type="text"/>
+    </form>
     <button id="run">Get Pokemon</button>
 </div>
 <div id="pokedex">
@@ -86,14 +117,31 @@ var_dump(json_decode($homepage, true));
     <div id="right">
         <!--        Where our stats will go-->
         <div id="stats">
-            <strong>Name:</strong> <span id="pokeName"></span><br/>
+            <strong>Name:</strong>
+            <span id="pokeName"><p>
+                <?php echo $arr["name"];
+                ?>
+                </p>
+            </span><br/>
             <strong>ID:</strong> <span id="pokeId"></span><br/>
             <span id="evolutionsInfo"></span><br/>
             <ul id="moves">
-                <li id="move1"></li>
-                <li id="move2"></li>
-                <li id="move3"></li>
-                <li id="move4"></li>
+                <li id="move1">
+                    <?php echo $arr["moves"]["0"]["move"]["name"];
+                    ?>
+                </li>
+                <li id="move2">
+                    <?php echo $arr["moves"]["0"]["move"]["name"];
+                    ?>
+                </li>
+                <li id="move3">
+                    <?php echo $arr["moves"]["0"]["move"]["name"];
+                    ?>
+                </li>
+                <li id="move4">
+                    <?php echo array_rand($arr["moves"],4);
+                    ?>
+                </li>
             </ul>
         </div>
         <div id="blueButtons1">
