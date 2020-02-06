@@ -21,7 +21,10 @@ var_dump(json_decode($homepage));
 
 ways to print output to a page
 //echo $arr;
-//print_r($arr);*/
+//print_r($arr);
+//IMPLODE turns an array into a string, the 'glue' is the separator
+//echo implode(",", $movesArr);
+*/
 
 //this is to display the json as an array
 $arr =json_decode($homepage, true);
@@ -30,16 +33,15 @@ $arr =json_decode($homepage, true);
 $movesArr = array();
 $moves = $arr["moves"];
 
-
 for ($i = 0; $i < $NUMBERMOVES; $i++){
     //$randMoves = array_rand($moves, count($arr["moves"]));
     $randNumber = rand(0, count($arr["moves"]));
     array_push($movesArr, $arr["moves"][$randNumber]["move"]["name"]);
 }
-echo implode(",", $movesArr);
-
 //NOTE - How to randomise an array
 //$randMoves = array_rand($movesArr, 4);
+
+$sprite = $arr["sprites"]["front_default"];
 
 ?>
 
@@ -87,7 +89,13 @@ echo implode(",", $movesArr);
             <!--            Where our sprites and evolved from will go-->
             <div id="picture">
                 <img id="Pevolution" />
-                <img id="sprite" />
+                <!-- both of the below methods work, just note to remember the extra quotation marks in the bottom one
+                <img src="<?php /*echo $sprite
+                */?>">-->
+                <?php
+                echo "<img src='".$sprite."'/>"
+                ?>
+
 
             </div>
             <div id="buttonbottomPicture"></div>
