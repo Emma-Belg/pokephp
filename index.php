@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+$NUMBERMOVES = 4;
+
 ini_set("display_errors", "1");
 ini_set("display_startup_errors", "1");
 error_reporting(E_ALL);
@@ -11,31 +13,34 @@ if(empty($_GET['pokemonToGet'])) {
  else {
      $homepage = file_get_contents("https://pokeapi.co/api/v2/pokemon/".$_GET["pokemonToGet"]);
  }
-//echo $homepage;
+
 
 /*//this is to display the json as an object
-var_dump(json_decode($homepage));*/
+//NOTE: try to avoid using var_dump
+var_dump(json_decode($homepage));
+
+ways to print output to a page
+//echo $arr;
+//print_r($arr);*/
 
 //this is to display the json as an array
 $arr =json_decode($homepage, true);
-//echo $arr;
-//print_r($arr);
+
 //echo $arr["moves"];
 $movesArr = array();
 $moves = $arr["moves"];
 
-for ($i = 0; $i < count($arr["moves"]); $i++){
-    array_push($movesArr, $arr["moves"][$i]["name"]);
+
+for ($i = 0; $i < $NUMBERMOVES; $i++){
+    //$randMoves = array_rand($moves, count($arr["moves"]));
+    $randNumber = rand(0, count($arr["moves"]));
+    array_push($movesArr, $arr["moves"][$randNumber]["move"]["name"]);
 }
+echo implode(",", $movesArr);
 
-$randMoves = array_rand($movesArr, 4);
-echo implode(",", $randMoves)
-//echo $arr[$randMoves[0]]."<br>";
+//NOTE - How to randomise an array
+//$randMoves = array_rand($movesArr, 4);
 
-/*
-$arr2 = ['umber' => ['three' => 3,4], "two" => 2,3,4];
-$arr2['umber']['three'];
-$arr['abilities']['moves'];*/
 ?>
 
 <!DOCTYPE html>
@@ -127,19 +132,23 @@ $arr['abilities']['moves'];*/
             <span id="evolutionsInfo"></span><br/>
             <ul id="moves">
                 <li id="move1">
-                    <?php echo $arr["moves"]["0"]["move"]["name"];
+                    <?php
+                    echo $movesArr[0]."<br>";
                     ?>
                 </li>
                 <li id="move2">
-                    <?php echo $arr["moves"]["0"]["move"]["name"];
+                    <?php
+                    echo $movesArr[1]."<br>";
                     ?>
                 </li>
                 <li id="move3">
-                    <?php echo $arr["moves"]["0"]["move"]["name"];
+                    <?php
+                    echo $movesArr[2]."<br>";
                     ?>
                 </li>
                 <li id="move4">
-                    <?php echo array_rand($arr["moves"],4);
+                    <?php
+                    echo $movesArr[3]."<br>";
                     ?>
                 </li>
             </ul>
