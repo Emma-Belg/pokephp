@@ -7,14 +7,6 @@ ini_set("display_errors", "1");
 ini_set("display_startup_errors", "1");
 error_reporting(E_ALL);
 
-if(empty($_GET['pokemonToGet'])) {
-    $homepage = file_get_contents("https://pokeapi.co/api/v2/pokemon/1");
-}
- else {
-     $homepage = file_get_contents("https://pokeapi.co/api/v2/pokemon/".$_GET["pokemonToGet"]);
- }
-
-
 /*//this is to display the json as an object
 //NOTE: try to avoid using var_dump
 var_dump(json_decode($homepage));
@@ -24,24 +16,44 @@ ways to print output to a page
 //print_r($arr);
 //IMPLODE turns an array into a string, the 'glue' is the separator
 //echo implode(",", $movesArr);
+
+//NOTE - How to randomise an array
+//$randMoves = array_rand($movesArr, 4);
 */
 
-//this is to display the json as an array
-$arr =json_decode($homepage, true);
+/*if (isset($_GET['pokemonToGet']) && !empty($_GET['pokemonToGet']))
+    $pokeName = $_GET['pokemonToGet'];
+else {
+    $pokeName = 3;
+}*/
+$pokeName = $_GET['pokemonToGet'];
 
-//echo $arr["moves"];
+$homepage = file_get_contents("https://pokeapi.co/api/v2/pokemon/" . $pokeName);
+$prevolution = file_get_contents("https://pokeapi.co/api/v2/pokemon-species/" . $pokeName);
+
+//this is to display the json as an array
+$arr = json_decode($homepage, true);
+$preArr = json_decode($prevolution, true);
+
+$sprite = $arr["sprites"]["front_default"];
+$prevolName = $preArr["evolves_from_species"]["name"];
+
+$prevolSpriteInput = file_get_contents("https://pokeapi.co/api/v2/pokemon/" . $prevolName);
+$prevolSpriteArr = json_decode($prevolSpriteInput, true);
+$prevolSprite = $prevolSpriteArr["sprites"]["front_default"];
+
 $movesArr = array();
 $moves = $arr["moves"];
 
-for ($i = 0; $i < $NUMBERMOVES; $i++){
+for ($i = 0; $i < $NUMBERMOVES; $i++) {
     //$randMoves = array_rand($moves, count($arr["moves"]));
-    $randNumber = rand(0, count($arr["moves"]));
+    $randNumber = rand(0, count($arr["moves"]) - 1);
     array_push($movesArr, $arr["moves"][$randNumber]["move"]["name"]);
 }
-//NOTE - How to randomise an array
-//$randMoves = array_rand($movesArr, 4);
+if ($arr["moves"] === 0) {
+    ;
+}
 
-$sprite = $arr["sprites"]["front_default"];
 
 ?>
 
@@ -57,8 +69,8 @@ $sprite = $arr["sprites"]["front_default"];
 </head>
 <body>
 <div id="searchBar">
-    <form method="get" action="" name="pokemonToGet">
-        <input type="text"/>
+    <form method="get" action="" >
+        <input type="text" name="pokemonToGet"/>
     </form>
     <button id="run">Get Pokemon</button>
 </div>
@@ -69,7 +81,7 @@ $sprite = $arr["sprites"]["front_default"];
         <div id="bg_curve2_left"></div>
         <div id="curve1_left">
             <div id="buttonGlass">
-                <div id="reflect"> </div>
+                <div id="reflect"></div>
             </div>
             <div id="miniButtonGlass1"></div>
             <div id="miniButtonGlass2"></div>
@@ -88,12 +100,18 @@ $sprite = $arr["sprites"]["front_default"];
             </div>
             <!--            Where our sprites and evolved from will go-->
             <div id="picture">
-                <img id="Pevolution" />
+                <img id="Prevolution"/>
+                <!--                <img src="<?php /*echo $prevolSpriteArr
+                */ ?>">-->
+                <?php
+                echo "<img src='" . $prevolSprite . "'/>"
+                ?>
+                <img id="Sprite"/>
                 <!-- both of the below methods work, just note to remember the extra quotation marks in the bottom one
                 <img src="<?php /*echo $sprite
-                */?>">-->
+                */ ?>">-->
                 <?php
-                echo "<img src='".$sprite."'/>"
+                echo "<img src='" . $sprite . "'/>"
                 ?>
 
 
@@ -141,22 +159,22 @@ $sprite = $arr["sprites"]["front_default"];
             <ul id="moves">
                 <li id="move1">
                     <?php
-                    echo $movesArr[0]."<br>";
+                    echo $movesArr[0] . "<br>";
                     ?>
                 </li>
                 <li id="move2">
                     <?php
-                    echo $movesArr[1]."<br>";
+                    echo $movesArr[1] . "<br>";
                     ?>
                 </li>
                 <li id="move3">
                     <?php
-                    echo $movesArr[2]."<br>";
+                    echo $movesArr[2] . "<br>";
                     ?>
                 </li>
                 <li id="move4">
                     <?php
-                    echo $movesArr[3]."<br>";
+                    echo $movesArr[3] . "<br>";
                     ?>
                 </li>
             </ul>
@@ -179,8 +197,18 @@ $sprite = $arr["sprites"]["front_default"];
         <div id="miniButtonGlass5"></div>
         <div id="barbutton3"></div>
         <div id="barbutton4"></div>
-        <div id="yellowBox1"></div>
-        <div id="yellowBox2"></div>
+        <div id="yellowBox1">
+            <p><?php
+                echo $prevolName;
+                ?>
+            </p>
+        </div>
+        <div id="yellowBox2">
+            <p><?php
+                echo $arr["name"];
+                ?>
+            </p>
+        </div>
         <div id="bg_curve1_right"></div>
         <div id="bg_curve2_right"></div>
         <div id="curve1_right"></div>
